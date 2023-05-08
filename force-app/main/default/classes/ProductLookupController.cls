@@ -1,4 +1,6 @@
 public with sharing class ProductLookupController {
+
+    //Queries for a product - If one doesn't exist it calls the getProductName method to lookup the name
     @AuraEnabled
     public static Product2 getProduct(String barcode) {
         system.debug(barcode);
@@ -16,6 +18,7 @@ public with sharing class ProductLookupController {
         }
     }
 
+    //Uses upcitemdb.com's free upc lookup 
     @AuraEnabled
     public static String getProductName(String barcode) {
         Http http = new Http();
@@ -28,12 +31,11 @@ public with sharing class ProductLookupController {
             if(response.getStatusCode() == 200) {
                 // Deserialize the JSON string into collections of primitive data types.
                 Map<String, Object> results = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
-                List<OBject> items = (List<OBject>) results.get('items');
+                List<Object> items = (List<Object>) results.get('items');
                 Map<String, Object> item = (Map<String, Object>)items[0];
                 return item.get('title').toString().left(80);
             }
         }
         return null;
-        
     }
 }

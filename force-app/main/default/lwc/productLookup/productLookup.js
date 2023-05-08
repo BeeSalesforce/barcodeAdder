@@ -15,28 +15,36 @@ export default class productLookup extends NavigationMixin(LightningElement) {
 	newProductName = '';
 	submitDisabled = false;
 
+	//Returns true if scanned product doesn't exist
 	get showNewProduct() {
 		return this.newProduct;
 	}
 
+	//Fired when a component is added to the DOM
+	//Instantiates the scanner and determines if scanner is available on the user's platform
 	connectedCallback() {
 		this.scanner = getBarcodeScanner();
 		this.scanButtonDisabled =
 			this.scanner === null || !this.scanner.isAvailable() || this.missingFlowName || this.missingApexClass;
 	}
 
+	//Fired when a component is rendered
 	renderedCallback() {
 		
 	}
 
+	//Fired when Scan Barcode button is clicked
+	//Redundant in this case as it just passes to handleBeginScanClick
     handleSearch(event){
         this.handleBeginScanClick(event);
     }
 
+	//Disables Save button when submitting
 	handleSubmit(event){
 		this.submitDisabled = true;
 	}
 
+	//Navigates user to newly created product
 	handleSuccess(event){
 		this[NavigationMixin.Navigate]({
 			type: 'standard__recordPage',
@@ -48,9 +56,12 @@ export default class productLookup extends NavigationMixin(LightningElement) {
 		});
     }
 
+	//Barcode handler
 	handleBeginScanClick(event) {
 		this.scannedBarcode = '';
 		this.scanComplete = false;
+
+		//Making sure the scanner is indeed present
 		if (this.scanner != null && this.scanner.isAvailable()) {
 			this.scanner
 				.beginCapture({
@@ -88,6 +99,7 @@ export default class productLookup extends NavigationMixin(LightningElement) {
 		}
 	}
 
+	//Determines if the product exists or not by calling the ProductLookupController class defined earlier
 	handleBarCode() {
         getProduct({
             barcode: this.scannedBarcode
@@ -108,5 +120,4 @@ export default class productLookup extends NavigationMixin(LightningElement) {
 			} 
         });
 	}
-
 }
